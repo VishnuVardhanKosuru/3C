@@ -1,14 +1,45 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Sidebar } from './Sidebar';
 
+/* Shared page entry animation used by all inner pages */
+export const pageEnter = {
+  initial:    { opacity: 0, y: 14 },
+  animate:    { opacity: 1, y: 0  },
+  exit:       { opacity: 0, y: -8 },
+  transition: { duration: 0.32, ease: [0.4, 0, 0.2, 1] },
+};
+
 /**
- * Shared page layout wrapper.
- * Renders the sidebar and a <main> that adjusts its left margin
- * whenever the sidebar collapses / expands.
+ * PageWrapper — wraps individual page content with a fade+slide entrance.
+ * Only use this standalone when NOT inside Layout (e.g. Auth page).
+ */
+export function PageWrapper({ children, style }) {
+  return (
+    <motion.div
+      initial={pageEnter.initial}
+      animate={pageEnter.animate}
+      exit={pageEnter.exit}
+      transition={pageEnter.transition}
+      style={style}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+/**
+ * Layout — shared shell with sidebar + main content area.
+ *
+ * Key fixes:
+ * - `style.marginLeft` is set as BOTH the initial style AND the animate target
+ *   so there is never a flash of zero-margin on first render.
+ * - Padding is generous and consistent so nothing clips against the sidebar.
+ * - A max-width content wrapper prevents over-stretching on wide screens.
  */
 export function Layout({ children }) {
   const [collapsed, setCollapsed] = useState(false);
+  const sidebarW = collapsed ? 72 : 240;
 
   return (
     <div className="flex min-h-screen relative">
@@ -19,22 +50,30 @@ export function Layout({ children }) {
 
       <Sidebar onCollapse={setCollapsed} />
 
-      {/* Main content shifts right by the sidebar width on md+ */}
+      {/*
+        Main content area.
+        We set initial marginLeft equal to the current sidebar width
+        so the first paint is already correct — no flash/clipping.
+      */}
       <motion.main
-        className="flex-1 relative z-10 min-h-screen"
-        animate={{ marginLeft: collapsed ? 72 : 240 }}
+        className="flex-1 relative z-10 min-h-screen overflow-x-hidden"
+        initial={{ marginLeft: sidebarW }}
+        animate={{ marginLeft: sidebarW }}
         transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
         style={{
-          /* On mobile the sidebar is hidden, so no margin needed */
-          paddingTop: 'clamp(16px, 4vw, 40px)',
-          paddingBottom: 40,
-          paddingLeft: 'clamp(16px, 4vw, 40px)',
-          paddingRight: 'clamp(16px, 4vw, 40px)',
+          paddingTop:    32,
+          paddingBottom: 48,
+          paddingLeft:   32,
+          paddingRight:  32,
         }}
       >
-        {/* Small screens: leave space for the floating hamburger button */}
+        {/* Mobile: space for hamburger button */}
         <div className="md:hidden h-14" aria-hidden="true" />
-        {children}
+
+        {/* Content max-width wrapper — prevents over-stretch on ultrawide */}
+        <div style={{ maxWidth: 1400, width: '100%' }}>
+          <PageWrapper>{children}</PageWrapper>
+        </div>
       </motion.main>
     </div>
   );

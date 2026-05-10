@@ -167,6 +167,7 @@ export function Sidebar({ onCollapse }) {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.05, duration: 0.3 }}
+              style={{ position: 'relative' }}
             >
               <NavLink
                 to={path}
@@ -175,27 +176,68 @@ export function Sidebar({ onCollapse }) {
               >
                 {({ isActive }) => (
                   <>
-                    <motion.div whileHover={{ scale: 1.15 }} transition={{ type: 'spring', stiffness: 400 }}>
+                    {/* Animated left-edge active bar */}
+                    {isActive && (
+                      <motion.span
+                        layoutId="sidebar-active-bar"
+                        style={{
+                          position: 'absolute',
+                          left: -8,
+                          top: '50%',
+                          translateY: '-50%',
+                          width: 3,
+                          height: 22,
+                          borderRadius: 99,
+                          background: 'linear-gradient(180deg, var(--purple-light), var(--pink))',
+                          boxShadow: '0 0 10px rgba(168,85,247,0.7)',
+                        }}
+                        transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                      />
+                    )}
+
+                    <motion.div
+                      whileHover={{ scale: 1.18 }}
+                      transition={{ type: 'spring', stiffness: 400 }}
+                      style={{ position: 'relative' }}
+                    >
                       <Icon size={20} className="flex-shrink-0" />
+                      {/* collapsed mode active pulse dot */}
+                      {isActive && collapsed && (
+                        <motion.span
+                          style={{
+                            position: 'absolute',
+                            bottom: -2, right: -2,
+                            width: 7, height: 7,
+                            borderRadius: '50%',
+                            background: 'var(--purple-light)',
+                            boxShadow: '0 0 6px var(--purple-light)',
+                          }}
+                          animate={{ scale: [1, 1.35, 1] }}
+                          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                        />
+                      )}
                     </motion.div>
+
                     <AnimatePresence>
                       {!collapsed && (
                         <motion.span
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.15 }}
+                          initial={{ opacity: 0, x: -6 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -6 }}
+                          transition={{ duration: 0.18 }}
                           style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 500 }}
                         >
                           {label}
                         </motion.span>
                       )}
                     </AnimatePresence>
+
+                    {/* expanded mode trailing indicator dot */}
                     {isActive && !collapsed && (
                       <motion.div
-                        layoutId="activeIndicator"
+                        layoutId="activeTrailDot"
                         className="ml-auto w-1.5 h-1.5 rounded-full"
-                        style={{ background: '#a855f7' }}
+                        style={{ background: 'var(--purple-light)', boxShadow: '0 0 5px var(--purple-light)' }}
                       />
                     )}
                   </>
@@ -256,7 +298,14 @@ export function Sidebar({ onCollapse }) {
             color: '#64748b',
             zIndex: 101,
           }}
-          whileHover={{ scale: 1.2, borderColor: '#7c3aed', color: '#a855f7' }}
+          whileHover={{
+            scale: 1.25,
+            borderColor: '#a855f7',
+            color: '#a855f7',
+            boxShadow: '0 0 12px rgba(168,85,247,0.5)',
+            background: 'rgba(124,58,237,0.18)',
+          }}
+          whileTap={{ scale: 0.9 }}
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {collapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}

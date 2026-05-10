@@ -60,12 +60,7 @@ export default function IdeaVaultPage() {
   return (
     <Layout>
       {/* Header */}
-      <motion.div
-        initial={{ opacity:0, y:-24 }}
-        animate={{ opacity:1, y:0 }}
-        transition={{ duration:0.5 }}
-        className="mb-10"
-      >
+      <div className="mb-8">
         <div className="flex flex-wrap items-center gap-4 mb-3">
           <motion.div
             className="w-14 h-14 rounded-2xl flex items-center justify-center float"
@@ -105,16 +100,14 @@ export default function IdeaVaultPage() {
             </motion.div>
           )}
         </div>
-      </motion.div>
+      </div>
 
       {/* Input Area */}
       <motion.div
-        initial={{ opacity:0, y:24 }}
-        animate={{ opacity:1, y:0 }}
-        transition={{ delay:0.15, duration:0.5 }}
-        className="glass-panel p-6 mb-8"
-        style={{ maxWidth: 780 }}
-        animate={focused ? { boxShadow:'0 0 0 2px rgba(124,58,237,0.3), 0 0 40px rgba(124,58,237,0.1)' } : {}}
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.08, duration: 0.4 }}
+        className="glass-panel p-6 mb-7"
       >
         <label className="block text-sm font-semibold mb-3 flex items-center gap-2"
           style={{ color:'var(--text-secondary)', fontFamily:'Space Grotesk' }}>

@@ -11,6 +11,7 @@ import { YouTubeChart, InstagramChart } from '../components/GrowthChart';
 import { AIAssistant } from '../components/AIAssistant';
 import { useIdeas } from '../hooks/useIdeas';
 import { Button } from '../components/ui/Button';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 /* ── Animation variants ────────────────────────────────── */
 const container = {
@@ -100,6 +101,7 @@ function QuickIdeaWidget() {
 
 /* ── Dashboard Page ────────────────────────────────────── */
 export default function DashboardPage() {
+  usePageTitle('Dashboard');
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -113,165 +115,173 @@ export default function DashboardPage() {
   return (
     <Layout>
       {/* Welcome header */}
-      <motion.div
-        initial={{ opacity:0, y:-20 }}
-        animate={{ opacity:1, y:0 }}
-        transition={{ duration:0.5 }}
-        className="mb-8"
-      >
-        <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="mb-6">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
           <div>
-            <motion.h1
+            <h1
               className="text-2xl md:text-3xl font-bold"
-              style={{ fontFamily:'Space Grotesk' }}
-              initial={{ opacity:0, x:-20 }}
-              animate={{ opacity:1, x:0 }}
-              transition={{ delay:0.1, duration:0.5 }}
+              style={{ fontFamily: 'Space Grotesk' }}
             >
               Welcome back,{' '}
               <span className="gradient-text-purple">{user?.username || 'Creator'}</span> 👋
-            </motion.h1>
-            <motion.p
-              className="mt-1 text-sm"
-              style={{ color:'var(--text-muted)', fontFamily:'Inter' }}
-              initial={{ opacity:0 }} animate={{ opacity:1 }}
-              transition={{ delay:0.2 }}
-            >
+            </h1>
+            <p className="mt-1 text-sm" style={{ color: 'var(--text-muted)', fontFamily: 'Inter' }}>
               Here's what's happening with your creator empire today.
-            </motion.p>
+            </p>
           </div>
-          <motion.div
-            className="flex items-center gap-2 px-4 py-2 rounded-xl shimmer"
-            style={{ background:'var(--purple-dim)', border:'1px solid rgba(124,58,237,0.25)' }}
-            initial={{ opacity:0, x:20 }} animate={{ opacity:1, x:0 }}
-            transition={{ delay:0.25 }}
+          <div
+            className="flex items-center gap-2 px-4 py-2 rounded-xl shimmer flex-shrink-0"
+            style={{ background: 'var(--purple-dim)', border: '1px solid rgba(124,58,237,0.25)' }}
           >
-            <div className="w-2 h-2 rounded-full" style={{ background:'var(--green)' }} />
-            <span className="text-sm font-medium" style={{ fontFamily:'Space Grotesk', color:'var(--purple-light)' }}>
+            <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: 'var(--green)', boxShadow: '0 0 6px var(--green)' }} />
+            <span className="text-sm font-medium" style={{ fontFamily: 'Space Grotesk', color: 'var(--purple-light)' }}>
               All systems live
             </span>
-          </motion.div>
+          </div>
         </div>
 
-        {/* Stats bar */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-6 stats-bar">
+        {/* Stats bar — auto-fit 4 cols on lg, 2 on sm */}
+        <motion.div
+          variants={container}
+          initial="hidden"
+          animate="visible"
+          className="grid gap-3"
+          style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}
+        >
           {stats.map((s, i) => (
             <motion.div
               key={i}
               custom={i}
               variants={statIn}
-              initial="hidden"
-              animate="visible"
-              className="glass-card flex items-center gap-3 px-4 py-3"
-              whileHover={{ scale:1.04, y:-2 }}
+              className="glass-card flex items-center gap-3 px-4 py-4"
+              whileHover={{ y: -3 }}
             >
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{ background:`${s.color}20` }}>
-                <s.icon size={18} style={{ color:s.color }} />
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ background: `${s.color}20` }}
+              >
+                <s.icon size={20} style={{ color: s.color }} />
               </div>
               <div className="min-w-0">
-                <p className="font-bold text-lg leading-tight" style={{ fontFamily:'Space Grotesk', color:s.color }}>{s.value}</p>
-                <p className="text-xs leading-tight truncate" style={{ color:'var(--text-muted)' }}>{s.label}</p>
+                <p className="font-bold text-xl leading-tight" style={{ fontFamily: 'Space Grotesk', color: s.color }}>
+                  {s.value}
+                </p>
+                <p className="text-xs leading-tight truncate mt-0.5" style={{ color: 'var(--text-muted)' }}>
+                  {s.label}
+                </p>
               </div>
             </motion.div>
           ))}
-        </div>
-      </motion.div>
+        </motion.div>
+      </div>
 
       {/* 2×2 card grid */}
       <motion.div
         variants={container}
         initial="hidden"
         animate="visible"
-        className="grid grid-cols-1 md:grid-cols-2 gap-5 dashboard-grid"
+        className="grid grid-cols-1 md:grid-cols-2 gap-5"
       >
         {/* YouTube */}
-        <motion.div variants={cardIn} className="glass-card p-5 md:p-6" whileHover={{ scale:1.02, y:-3 }}>
-          <div className="flex items-center justify-between mb-4">
+        <motion.div variants={cardIn} className="glass-card p-6" whileHover={{ y: -3 }}>
+          <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-3">
-              <motion.div className="w-10 h-10 rounded-xl flex items-center justify-center"
-                style={{ background:'rgba(59,130,246,0.15)' }}
-                whileHover={{ rotate:10, scale:1.1 }}>
-                <Tv2 size={20} style={{ color:'var(--blue)' }} />
+              <motion.div
+                className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ background: 'rgba(59,130,246,0.15)' }}
+                whileHover={{ rotate: 10, scale: 1.1 }}
+              >
+                <Tv2 size={20} style={{ color: 'var(--blue)' }} />
               </motion.div>
               <div>
-                <h3 className="font-bold" style={{ fontFamily:'Space Grotesk' }}>YouTube</h3>
-                <p className="text-xs" style={{ color:'var(--text-muted)' }}>@YourChannel</p>
+                <h3 className="font-bold" style={{ fontFamily: 'Space Grotesk' }}>YouTube</h3>
+                <p className="text-xs" style={{ color: 'var(--text-muted)' }}>@YourChannel</p>
               </div>
             </div>
             <span className="stat-badge badge-green">↑ 18.5%</span>
           </div>
-          <div className="flex flex-wrap gap-4 mb-4">
-            {[['11.2K','Subscribers'],['48.9K','Monthly Views'],['4.2%','Eng. Rate']].map(([v,l]) => (
-              <div key={l}>
-                <p className="text-xl font-bold" style={{ fontFamily:'Space Grotesk' }}>{v}</p>
-                <p className="text-xs" style={{ color:'var(--text-muted)' }}>{l}</p>
+          <div className="grid grid-cols-3 gap-3 mb-5">
+            {[['11.2K', 'Subscribers'], ['48.9K', 'Views/mo'], ['4.2%', 'Eng. Rate']].map(([v, l]) => (
+              <div key={l} className="text-center">
+                <p className="text-lg font-bold" style={{ fontFamily: 'Space Grotesk' }}>{v}</p>
+                <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>{l}</p>
               </div>
             ))}
           </div>
           <YouTubeChart mini />
-          <button onClick={() => navigate('/youtube')}
-            className="flex items-center gap-1 text-xs mt-3 hover:underline"
-            style={{ color:'var(--blue)' }}>
+          <button
+            onClick={() => navigate('/youtube')}
+            className="flex items-center gap-1 text-xs mt-4 hover:underline"
+            style={{ color: 'var(--blue)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+          >
             View full analytics <ExternalLink size={11} />
           </button>
         </motion.div>
 
         {/* Instagram */}
-        <motion.div variants={cardIn} className="glass-card p-5 md:p-6" whileHover={{ scale:1.02, y:-3 }}>
-          <div className="flex items-center justify-between mb-4">
+        <motion.div variants={cardIn} className="glass-card p-6" whileHover={{ y: -3 }}>
+          <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-3">
-              <motion.div className="w-10 h-10 rounded-xl flex items-center justify-center"
-                style={{ background:'rgba(236,72,153,0.15)' }}
-                whileHover={{ rotate:-10, scale:1.1 }}>
-                <Camera size={20} style={{ color:'var(--pink)' }} />
+              <motion.div
+                className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ background: 'rgba(236,72,153,0.15)' }}
+                whileHover={{ rotate: -10, scale: 1.1 }}
+              >
+                <Camera size={20} style={{ color: 'var(--pink)' }} />
               </motion.div>
               <div>
-                <h3 className="font-bold" style={{ fontFamily:'Space Grotesk' }}>Instagram</h3>
-                <p className="text-xs" style={{ color:'var(--text-muted)' }}>@YourProfile</p>
+                <h3 className="font-bold" style={{ fontFamily: 'Space Grotesk' }}>Instagram</h3>
+                <p className="text-xs" style={{ color: 'var(--text-muted)' }}>@YourProfile</p>
               </div>
             </div>
             <span className="stat-badge badge-pink">↑ 29.3%</span>
           </div>
-          <div className="flex flex-wrap gap-4 mb-4">
-            {[['5.3K','Followers'],['312','Avg. Likes'],['6.8%','Eng. Rate']].map(([v,l]) => (
-              <div key={l}>
-                <p className="text-xl font-bold" style={{ fontFamily:'Space Grotesk' }}>{v}</p>
-                <p className="text-xs" style={{ color:'var(--text-muted)' }}>{l}</p>
+          <div className="grid grid-cols-3 gap-3 mb-5">
+            {[['5.3K', 'Followers'], ['312', 'Avg. Likes'], ['6.8%', 'Eng. Rate']].map(([v, l]) => (
+              <div key={l} className="text-center">
+                <p className="text-lg font-bold" style={{ fontFamily: 'Space Grotesk' }}>{v}</p>
+                <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>{l}</p>
               </div>
             ))}
           </div>
           <InstagramChart mini />
-          <button onClick={() => navigate('/instagram')}
-            className="flex items-center gap-1 text-xs mt-3 hover:underline"
-            style={{ color:'var(--pink)' }}>
+          <button
+            onClick={() => navigate('/instagram')}
+            className="flex items-center gap-1 text-xs mt-4 hover:underline"
+            style={{ color: 'var(--pink)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+          >
             View full analytics <ExternalLink size={11} />
           </button>
         </motion.div>
 
         {/* AI Assistant */}
-        <motion.div variants={cardIn} className="glass-card p-5 md:p-6">
-          <div className="flex items-center justify-between mb-4">
+        <motion.div variants={cardIn} className="glass-card p-6">
+          <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-3">
               <motion.div
-                className="w-10 h-10 rounded-xl flex items-center justify-center pulse-purple"
-                style={{ background:'linear-gradient(135deg,var(--purple),var(--pink))' }}
-                animate={{ rotate:[0,360] }}
-                transition={{ duration:20, repeat:Infinity, ease:'linear' }}
+                className="w-10 h-10 rounded-xl flex items-center justify-center pulse-purple flex-shrink-0"
+                style={{ background: 'linear-gradient(135deg,var(--purple),var(--pink))' }}
+                animate={{ rotate: [0, 360] }}
+                transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
               >
-                <Bot size={20} className="text-white" style={{ animation:'none' }} />
+                <Bot size={20} className="text-white" style={{ animation: 'none' }} />
               </motion.div>
               <div>
-                <h3 className="font-bold" style={{ fontFamily:'Space Grotesk' }}>AI Assistant</h3>
-                <p className="text-xs flex items-center gap-1" style={{ color:'var(--green)' }}>
-                  <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background:'var(--green)' }} />
+                <h3 className="font-bold" style={{ fontFamily: 'Space Grotesk' }}>AI Assistant</h3>
+                <p className="text-xs flex items-center gap-1.5" style={{ color: 'var(--green)' }}>
+                  <span className="w-1.5 h-1.5 rounded-full inline-block flex-shrink-0" style={{ background: 'var(--green)' }} />
                   Ready to create
                 </p>
               </div>
             </div>
-            <button onClick={() => navigate('/ai')}
-              className="text-xs flex items-center gap-1 px-3 py-1.5 rounded-lg transition-all hover:scale-105"
-              style={{ background:'var(--purple-dim)', color:'var(--purple-light)', border:'1px solid rgba(124,58,237,0.25)' }}>
+            <button
+              onClick={() => navigate('/ai')}
+              className="text-xs flex items-center gap-1 px-3 py-1.5 rounded-lg"
+              style={{
+                background: 'var(--purple-dim)', color: 'var(--purple-light)',
+                border: '1px solid rgba(124,58,237,0.25)', cursor: 'pointer',
+              }}
+            >
               Open <ExternalLink size={11} />
             </button>
           </div>
@@ -279,22 +289,28 @@ export default function DashboardPage() {
         </motion.div>
 
         {/* IdeaVault */}
-        <motion.div variants={cardIn} className="glass-card p-5 md:p-6">
-          <div className="flex items-center justify-between mb-4">
+        <motion.div variants={cardIn} className="glass-card p-6">
+          <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-3">
               <motion.div
-                className="w-10 h-10 rounded-xl flex items-center justify-center float"
-                style={{ background:'linear-gradient(135deg,rgba(124,58,237,0.25),rgba(16,185,129,0.15))' }}>
-                <Lightbulb size={20} style={{ color:'var(--purple-light)' }} />
+                className="w-10 h-10 rounded-xl flex items-center justify-center float flex-shrink-0"
+                style={{ background: 'linear-gradient(135deg,rgba(124,58,237,0.25),rgba(16,185,129,0.15))' }}
+              >
+                <Lightbulb size={20} style={{ color: 'var(--purple-light)' }} />
               </motion.div>
               <div>
-                <h3 className="font-bold" style={{ fontFamily:'Space Grotesk' }}>IdeaVault</h3>
-                <p className="text-xs" style={{ color:'var(--text-muted)' }}>Capture every spark</p>
+                <h3 className="font-bold" style={{ fontFamily: 'Space Grotesk' }}>IdeaVault</h3>
+                <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Capture every spark</p>
               </div>
             </div>
-            <button onClick={() => navigate('/ideavault')}
-              className="text-xs flex items-center gap-1 px-3 py-1.5 rounded-lg transition-all hover:scale-105"
-              style={{ background:'rgba(124,58,237,0.1)', color:'var(--purple-light)', border:'1px solid rgba(124,58,237,0.18)' }}>
+            <button
+              onClick={() => navigate('/ideavault')}
+              className="text-xs flex items-center gap-1 px-3 py-1.5 rounded-lg"
+              style={{
+                background: 'rgba(124,58,237,0.1)', color: 'var(--purple-light)',
+                border: '1px solid rgba(124,58,237,0.18)', cursor: 'pointer',
+              }}
+            >
               Open Vault <ExternalLink size={11} />
             </button>
           </div>
